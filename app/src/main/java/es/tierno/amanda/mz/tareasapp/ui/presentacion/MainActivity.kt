@@ -1,30 +1,29 @@
 package es.tierno.amanda.mz.tareasapp.ui.presentacion
 
-import TareaViewModel
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.ArrayAdapter
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.lifecycle.Observer
-import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.viewModels
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.room.CoroutinesRoom
 import dagger.hilt.android.AndroidEntryPoint
-import es.tierno.amanda.mz.tareasapp.R
-import es.tierno.amanda.mz.tareasapp.data.TareaRepository
+import es.tierno.amanda.mz.tareasapp.data.NotasRepository
+import es.tierno.amanda.mz.tareasapp.data.mock.TareaProvider
 import es.tierno.amanda.mz.tareasapp.data.room.entidades.PrioridadEntity
 import es.tierno.amanda.mz.tareasapp.databinding.ActivityMainBinding
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.EliminarPrioridadesUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.EliminarTareasUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.InsertarTareaUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.ObtenerTareasUseCase
-import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.RellenarPrioridadesInicio
+import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.InsertarPrioridadUseCase
+import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.ObtenerNotaUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.modelo.Tarea
-import es.tierno.amanda.mz.tareasapp.dominio.modelo.TareasPorPrioridad
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,6 +33,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity () : AppCompatActivity(), OnClickListener {
 
+    companion object{
+        const val INTERNET_REQUEST_CODE = 0
+    }
     private lateinit var binding: ActivityMainBinding
     //private val viewModel: TareaViewModel by viewModels()
     private lateinit var adapter: ArrayAdapter<String>
@@ -41,13 +43,15 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
     @Inject
     lateinit var insertarTareaCaseUse : InsertarTareaUseCase
     @Inject
-    lateinit var rellenarPrioridadesInicio: RellenarPrioridadesInicio
+    lateinit var insertarPrioridadUseCase: InsertarPrioridadUseCase
     @Inject
     lateinit var eliminarPrioridadesUseCase: EliminarPrioridadesUseCase
     @Inject
     lateinit var eliminarTareasUseCase: EliminarTareasUseCase
     @Inject
     lateinit var obtenerTareasUseCase: ObtenerTareasUseCase
+    @Inject
+    lateinit var repositorio: NotasRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +65,17 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf())
         binding.lista.adapter = adapter
 
-
+        CoroutineScope(Dispatchers.IO).launch {
+            val nota = repositorio.getNota()
+            withContext(Dispatchers.Main){
+                if (nota != null) {
+                    binding.txtPrueba.text = nota[0].nota
+                }
+            }
+        }
 }
+
+
     private fun insertarPrioridades() {
         lifecycleScope.launch(Dispatchers.IO){
             eliminarPrioridadesUseCase.invoke()
@@ -73,7 +86,7 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
                 PrioridadEntity(4, "Sin prisa")
             )
             prioridades.forEach { prioridad ->
-                rellenarPrioridadesInicio(prioridad)
+                insertarPrioridadUseCase(prioridad)
             }
         }
     }
@@ -117,6 +130,57 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
                 adapter.clear()
                 adapter.addAll(tareaNombres)
 
+            }
+        }
+    }
+
+    //Confimar si hay premisos
+    private fun checkInternetPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.INTERNET)
+            != PackageManager.PERMISSION_GRANTED) {
+            requestInternetPermission()
+        } else {
+            Toast.makeText(this,"Acceso a la funcionalidad", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun requestInternetPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.INTERNET)) {
+            //El usuario ya ha rechazado el permiso anteriormente, debemos indicarle que vaya a ajustes.
+            Toast.makeText(this,"Conceda permisos en ajustes", Toast.LENGTH_SHORT).show()
+        } else {
+            //El usuario nunca ha aceptado ni rechazado, así que le solicitamos que acepte el permiso.
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.INTERNET),
+                Companion.INTERNET_REQUEST_CODE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            INTERNET_REQUEST_CODE -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    //El usuario ha aceptado el permiso, ya no hay que volver a solicitarlo, podemos lanzar la funcionalidad desde aquí.
+                    Toast.makeText(
+                        this,
+                        "Acceso a la funcionalidad una vez aceptado el permiso",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    //El usuario ha rechazado el permiso
+                    Toast.makeText(this, "Conceda permisos en ajustes", Toast.LENGTH_SHORT).show()
+                }
+                return
+            }
+
+            else -> {
+                // Para aquellos permisos no controlados
             }
         }
     }

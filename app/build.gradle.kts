@@ -68,6 +68,9 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
 
+    //retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }
 kapt {
     correctErrorTypes = true

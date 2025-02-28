@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".ui.presentacion.NotasFragment">
+
+    <TextView
+        android:id="@+id/txt_nota"
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:text="@string/hello_blank_fragment"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/txt_autor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="autor"
+        android:textAlignment="center" />
+
+    <Button
+        android:id="@+id/btn_actualizar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+
+</LinearLayout>

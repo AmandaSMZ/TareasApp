@@ -28,4 +28,5 @@ object RoomModule {
     @Singleton
     @Provides
     fun providePrioridadDao(db:TareaDatabase) = db.prioridadDao()
+
 }
