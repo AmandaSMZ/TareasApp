@@ -1,6 +1,7 @@
 package es.tierno.amanda.mz.tareasapp.ui.presentacion
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -13,15 +14,20 @@ import es.tierno.amanda.mz.tareasapp.ui.viewmodel.NotasViewModel
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.ObtenerNotaUseCase
 import es.tierno.amanda.mz.tareasapp.data.NotasRepository
 import es.tierno.amanda.mz.tareasapp.ui.viewmodel.NotasViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 class NotasFragment : Fragment(), OnClickListener {
 
     private var _binding: FragmentNotasBinding? = null
     private val binding get() = _binding!!
-
     private val viewModel: NotasViewModel by viewModels() {
         NotasViewModelFactory(ObtenerNotaUseCase(NotasRepository()))
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

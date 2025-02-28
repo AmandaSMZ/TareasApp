@@ -3,4 +3,17 @@
     <string name="desc_btn_add">Añadir Tarea</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="btn_nota">Cargar Nota</string>
+    <string name="titulo_tareas">Lista de Tareas</string>
+    <string name="cont_lista">Pulsa para cargar la lista</string>
+    <string-array name="prioridades">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string name="hint_descripcion">Introduce la descripción...</string>
+    <string name="hint_titulo">Introduce un título para la tarea...</string>
+    <string name="txt_prioridad">Prioridad</string>
+    <string name="boton_guardar">Guardar</string>
 </resources>

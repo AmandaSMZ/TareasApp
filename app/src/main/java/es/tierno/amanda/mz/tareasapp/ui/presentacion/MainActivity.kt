@@ -1,6 +1,7 @@
 package es.tierno.amanda.mz.tareasapp.ui.presentacion
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.room.CoroutinesRoom
 import dagger.hilt.android.AndroidEntryPoint
+import es.tierno.amanda.mz.tareasapp.R
 import es.tierno.amanda.mz.tareasapp.data.NotasRepository
 import es.tierno.amanda.mz.tareasapp.data.mock.TareaProvider
 import es.tierno.amanda.mz.tareasapp.data.room.entidades.PrioridadEntity
@@ -50,29 +52,26 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
     lateinit var eliminarTareasUseCase: EliminarTareasUseCase
     @Inject
     lateinit var obtenerTareasUseCase: ObtenerTareasUseCase
-    @Inject
-    lateinit var repositorio: NotasRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        insertarPrioridades()
-        insertarTareas()
+        //insertarPrioridades()
+        //insertarTareas()
+        val mensajeInicio = arrayOf(getString(R.string.cont_lista))
 
         binding.button.setOnClickListener(this)
 
+        binding.btnAgregar.setOnClickListener {
+            val intent = Intent(this, AgregarActivity::class.java)
+            startActivity(intent)
+        }
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf())
         binding.lista.adapter = adapter
+        adapter.add(mensajeInicio[0])
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val nota = repositorio.getNota()
-            withContext(Dispatchers.Main){
-                if (nota != null) {
-                    binding.txtPrueba.text = nota[0].nota
-                }
-            }
-        }
+
 }
 
 

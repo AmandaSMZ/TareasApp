@@ -25,8 +25,8 @@ class TareaRepository @Inject constructor(
         return mapearTareasPrioridadAModelo(res)
 
     }
-    suspend fun insertarTarea(tarea: Tarea) {
-        var nuevaTarea = TareaEntity(0,tarea.titulo,tarea.descripcion,tarea.idPrioridad)
+    suspend fun insertarTarea(tarea: TareaModel) {
+        var nuevaTarea = TareaEntity(0,tarea.titulo,tarea.descripcion,tarea.prioridadId)
         tareaDao.insert(nuevaTarea)
     }
     suspend fun insertarPrioridad(prioridad: PrioridadEntity){
