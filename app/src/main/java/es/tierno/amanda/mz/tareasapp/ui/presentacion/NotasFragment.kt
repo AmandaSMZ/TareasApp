@@ -48,6 +48,7 @@ class NotasFragment : Fragment(), OnClickListener {
             }
         })
 
+        viewModel.fetchNota()
         binding.btnActualizar.setOnClickListener(this)
     }
 

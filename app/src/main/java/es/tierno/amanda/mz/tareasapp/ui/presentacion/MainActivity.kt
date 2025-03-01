@@ -22,8 +22,8 @@ import es.tierno.amanda.mz.tareasapp.databinding.ActivityMainBinding
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.EliminarPrioridadesUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.EliminarTareasUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.InsertarTareaUseCase
-import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.ObtenerTareasUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.InsertarPrioridadUseCase
+import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.ObtenerListaTareasUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.ObtenerNotaUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.modelo.Tarea
 import kotlinx.coroutines.CoroutineScope
@@ -50,8 +50,10 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
     lateinit var eliminarPrioridadesUseCase: EliminarPrioridadesUseCase
     @Inject
     lateinit var eliminarTareasUseCase: EliminarTareasUseCase
+    //@Inject
+    //lateinit var obtenerTareasUseCase: ObtenerTareasUseCase
     @Inject
-    lateinit var obtenerTareasUseCase: ObtenerTareasUseCase
+    lateinit var obtenerListaTareasUseCase: ObtenerListaTareasUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,21 +61,11 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
         setContentView(binding.root)
         //insertarPrioridades()
         //insertarTareas()
-        val mensajeInicio = arrayOf(getString(R.string.cont_lista))
 
-        binding.button.setOnClickListener(this)
-
-        binding.btnAgregar.setOnClickListener {
-            val intent = Intent(this, AgregarActivity::class.java)
-            startActivity(intent)
-        }
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf())
-        binding.lista.adapter = adapter
-        adapter.add(mensajeInicio[0])
-
+        binding.btnAgregar.setOnClickListener(this)
+        cargarTareas()
 
 }
-
 
     private fun insertarPrioridades() {
         lifecycleScope.launch(Dispatchers.IO){
@@ -118,19 +110,24 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        leerTareas()
+        val intent = Intent(this, AgregarActivity::class.java)
+        startActivity(intent)
     }
-    private fun leerTareas(){
-        lifecycleScope.launch(Dispatchers.IO) {
-            var prioridad = obtenerTareasUseCase.invoke()
-            withContext(Dispatchers.Main) {
-                binding.txtPrioridad.text = prioridad.nombre
-                val tareaNombres = prioridad.tareas.map { it.titulo }
-                adapter.clear()
-                adapter.addAll(tareaNombres)
+    private fun cargarTareas() {
 
-            }
+        CoroutineScope(Dispatchers.Main).launch {
+
+            val listaTareas = obtenerListaTareasUseCase.invoke()
+            val adapter = ArrayAdapter(
+                this@MainActivity,
+                android.R.layout.simple_list_item_1,
+                listaTareas.map { it.toString() }
+
+            )
+
+            binding.lista.adapter = adapter
         }
+
     }
 
     //Confimar si hay premisos

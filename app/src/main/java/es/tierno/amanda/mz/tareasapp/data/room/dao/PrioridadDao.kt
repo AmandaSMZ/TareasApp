@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import es.tierno.amanda.mz.tareasapp.data.room.entidades.PrioridadEntity
-import es.tierno.amanda.mz.tareasapp.data.room.entidades.TareasPrioridad
+
 @Dao
 interface PrioridadDao {
 
@@ -17,10 +17,6 @@ interface PrioridadDao {
 
     @Query("SELECT id FROM Prioridad")
     fun getAllId(): List<Int>
-
-    @Transaction
-    @Query("SELECT * FROM Prioridad WHERE id = :prioridadId")
-    fun getTareasPorPrioridad(prioridadId: Int): TareasPrioridad
 
     @Query("DELETE FROM Prioridad")
     fun borrarTabla()

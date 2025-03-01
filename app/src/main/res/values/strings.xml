@@ -16,4 +16,5 @@
     <string name="hint_titulo">Introduce un título para la tarea...</string>
     <string name="txt_prioridad">Prioridad</string>
     <string name="boton_guardar">Guardar</string>
+    <string name="siguiente_prioridad">Siguiente tarea </string>
 </resources>

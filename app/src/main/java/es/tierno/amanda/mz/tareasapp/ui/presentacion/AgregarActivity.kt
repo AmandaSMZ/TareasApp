@@ -1,10 +1,13 @@
 package es.tierno.amanda.mz.tareasapp.ui.presentacion
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import dagger.hilt.android.AndroidEntryPoint
 import es.tierno.amanda.mz.tareasapp.R
 import es.tierno.amanda.mz.tareasapp.databinding.ActivityAgregarBinding
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.InsertarTareaUseCase
@@ -14,8 +17,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class AgregarActivity : AppCompatActivity() {
+    companion object{
+        const val MENSAJE_CAMPOS_VACIOS : String = "Por favor, completa todos los campos."
+    }
     private lateinit var binding: ActivityAgregarBinding
+
     @Inject
     lateinit var insertarTareaUseCase: InsertarTareaUseCase
 
@@ -26,12 +34,20 @@ class AgregarActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnGuardar.setOnClickListener {
-            val nombre = binding.edtTitulo.text.toString()
-            val descripcion = binding.edtDescripcion.text.toString()
-            val id_prioridad = binding.idPrioridad.selectedItem.toString()
-            CoroutineScope(Dispatchers.IO).launch{
-                insertarTareaUseCase.invoke(Tarea(nombre,descripcion,id_prioridad.toInt()))
+            val nombre = binding.edtTitulo.text.toString().trim()
+            val descripcion = binding.edtDescripcion.text.toString().trim()
+            val id_prioridad = binding.idPrioridad.selectedItem.toString().trim()
+
+            if (nombre.isEmpty() || descripcion.isEmpty() || id_prioridad.isEmpty()) {
+                Toast.makeText(this, Companion.MENSAJE_CAMPOS_VACIOS, Toast.LENGTH_SHORT).show()
+            } else {
+                CoroutineScope(Dispatchers.IO).launch {
+                    insertarTareaUseCase.invoke(Tarea(nombre, descripcion, id_prioridad.toInt()))
+                }
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
             }
         }
+
     }
 }

@@ -2,7 +2,6 @@ package es.tierno.amanda.mz.tareasapp.data
 
 import es.tierno.amanda.mz.tareasapp.data.servicioRest.NotasApi
 import es.tierno.amanda.mz.tareasapp.data.servicioRest.NotasRespuesta
-import es.tierno.amanda.mz.tareasapp.data.servicioRest.RetrofitInstance
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
