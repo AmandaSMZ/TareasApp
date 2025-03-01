@@ -3,11 +3,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import es.tierno.amanda.mz.tareasapp.R
 import es.tierno.amanda.mz.tareasapp.dominio.modelo.TareaCompleta
 
-class DataAdapter(private val mList: List<TareaCompleta>) : RecyclerView.Adapter<DataAdapter.ViewHolder>() {
+class TareaAdapter(private val mList: List<TareaCompleta>) : RecyclerView.Adapter<TareaAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -22,6 +23,15 @@ class DataAdapter(private val mList: List<TareaCompleta>) : RecyclerView.Adapter
         holder.tvTitulo.text = tarea.titulo
         holder.tvDescripcion.text = tarea.descripcion
         holder.tvPrioridad.text = tarea.prioridad
+        val color = when (tarea.prioridad) {
+            "Importante" -> R.color.colorImportante
+            "Urgente" -> R.color.colorUrgente
+            "Prioridad Media" -> R.color.colorPrioridadMedia
+            "Sin prisa" -> R.color.colorSinPrisa
+            else -> R.color.black
+        }
+
+        holder.tvPrioridad.setTextColor(ContextCompat.getColor(holder.itemView.context, color))
     }
 
     override fun getItemCount(): Int {

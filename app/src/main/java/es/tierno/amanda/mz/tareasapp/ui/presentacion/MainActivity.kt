@@ -1,5 +1,6 @@
 package es.tierno.amanda.mz.tareasapp.ui.presentacion
 
+import TareaAdapter
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.room.CoroutinesRoom
 import dagger.hilt.android.AndroidEntryPoint
 import es.tierno.amanda.mz.tareasapp.R
@@ -39,8 +42,6 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
         const val INTERNET_REQUEST_CODE = 0
     }
     private lateinit var binding: ActivityMainBinding
-    //private val viewModel: TareaViewModel by viewModels()
-    private lateinit var adapter: ArrayAdapter<String>
 
     @Inject
     lateinit var insertarTareaCaseUse : InsertarTareaUseCase
@@ -50,10 +51,11 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
     lateinit var eliminarPrioridadesUseCase: EliminarPrioridadesUseCase
     @Inject
     lateinit var eliminarTareasUseCase: EliminarTareasUseCase
-    //@Inject
-    //lateinit var obtenerTareasUseCase: ObtenerTareasUseCase
     @Inject
     lateinit var obtenerListaTareasUseCase: ObtenerListaTareasUseCase
+
+    private lateinit var adapter : TareaAdapter
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +64,8 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
         //insertarPrioridades()
         //insertarTareas()
 
+        recyclerView = binding.recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(this)
         binding.btnAgregar.setOnClickListener(this)
         cargarTareas()
 
@@ -113,21 +117,13 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
         val intent = Intent(this, AgregarActivity::class.java)
         startActivity(intent)
     }
+
     private fun cargarTareas() {
-
         CoroutineScope(Dispatchers.Main).launch {
-
             val listaTareas = obtenerListaTareasUseCase.invoke()
-            val adapter = ArrayAdapter(
-                this@MainActivity,
-                android.R.layout.simple_list_item_1,
-                listaTareas.map { it.toString() }
-
-            )
-
-            binding.lista.adapter = adapter
+            val adaptador = TareaAdapter(listaTareas)
+            recyclerView.adapter = adaptador
         }
-
     }
 
     //Confimar si hay premisos
