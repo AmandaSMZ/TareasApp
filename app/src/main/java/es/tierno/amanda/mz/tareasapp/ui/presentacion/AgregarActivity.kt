@@ -30,6 +30,11 @@ class AgregarActivity : AppCompatActivity() {
         binding = ActivityAgregarBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnVolver.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.btnGuardar.setOnClickListener {
             val nombre = binding.edtTitulo.text.toString().trim()
             val descripcion = binding.edtDescripcion.text.toString().trim()

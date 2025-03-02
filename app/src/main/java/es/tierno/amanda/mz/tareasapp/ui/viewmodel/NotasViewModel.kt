@@ -18,7 +18,7 @@ class NotasViewModel @Inject constructor (private val obtenerNotaUseCase: Obtene
     fun fetchNota() {
         viewModelScope.launch {
             val result = obtenerNotaUseCase()
-            result?.let {
+            result.let {
                 nota.postValue(it)
             }
         }

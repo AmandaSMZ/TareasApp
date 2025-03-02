@@ -35,6 +35,8 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
         const val WRITE_CALENDAR_REQUEST_CODE = 10
         const val MENSAJE_PERMISO_CONCEDIDO = "Permiso concedido"
         const val MENSAJE_CONCEDA_PERMISO_AJUSTES = "Conceda el permiso en ajustes"
+        const val PREFS_NAME = "AppPrefs"
+        const val PRIMERA_EJECUCION = "primeraEjecucion"
     }
     private lateinit var binding: ActivityMainBinding
 
@@ -59,9 +61,7 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
 
         checkCalendarPermission()
 
-        //Descomentar estas dos líneas en la primera ejecución
-        insertarPrioridades()
-        insertarTareas()
+        comprobarPrimeraEjecucion()
 
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -166,6 +166,16 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
             }
             else -> {
             }
+        }
+    }
+
+    private fun comprobarPrimeraEjecucion(){
+        val sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val esPrimeraEjecucion = sharedPreferences.getBoolean(PRIMERA_EJECUCION, true)
+        if (esPrimeraEjecucion) {
+            insertarPrioridades()
+            insertarTareas()
+            sharedPreferences.edit().putBoolean(PRIMERA_EJECUCION, false).apply()
         }
     }
 }

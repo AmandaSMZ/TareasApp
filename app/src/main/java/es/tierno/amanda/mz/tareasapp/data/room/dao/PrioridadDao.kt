@@ -15,8 +15,6 @@ interface PrioridadDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(prioridad: PrioridadEntity)
 
-    @Query("SELECT id FROM Prioridad")
-    fun getAllId(): List<Int>
 
     @Query("DELETE FROM Prioridad")
     fun borrarTabla()

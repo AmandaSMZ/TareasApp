@@ -31,7 +31,7 @@ class TareaRepository @Inject constructor(
     }
 
     suspend fun obtenerListaTareasCompleta(): List<TareaConPrioridadModel>{
-        val lista = tareaDao.obtenerListaTareas()
+        val lista = tareaDao.obtenerLista()
         return lista.map { tareaConPrioridad ->
             TareaConPrioridadModel(
                 titulo = tareaConPrioridad.tarea.titulo,

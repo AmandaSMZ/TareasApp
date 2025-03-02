@@ -15,5 +15,5 @@ interface TareaDao {
     suspend fun borrarTabla()
 
     @Query("SELECT * FROM Tarea ORDER BY prioridad ASC")
-    suspend fun obtenerListaTareas() : List<TareaConPrioridad>
+    suspend fun obtenerLista() : List<TareaConPrioridad>
 }
