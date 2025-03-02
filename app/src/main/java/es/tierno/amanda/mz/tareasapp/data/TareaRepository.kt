@@ -1,13 +1,13 @@
 package es.tierno.amanda.mz.tareasapp.data
 
 import es.tierno.amanda.mz.tareasapp.data.mock.TareaProvider
+import es.tierno.amanda.mz.tareasapp.data.modelo.PrioridadModel
 import es.tierno.amanda.mz.tareasapp.data.modelo.TareaConPrioridadModel
 import es.tierno.amanda.mz.tareasapp.data.modelo.TareaModel
 import es.tierno.amanda.mz.tareasapp.data.room.dao.PrioridadDao
 import es.tierno.amanda.mz.tareasapp.data.room.dao.TareaDao
 import es.tierno.amanda.mz.tareasapp.data.room.entidades.PrioridadEntity
 import es.tierno.amanda.mz.tareasapp.data.room.entidades.TareaEntity
-import es.tierno.amanda.mz.tareasapp.dominio.modelo.Tarea
 import javax.inject.Inject
 
 class TareaRepository @Inject constructor(
@@ -19,8 +19,9 @@ class TareaRepository @Inject constructor(
         var nuevaTarea = TareaEntity(0,tarea.titulo,tarea.descripcion,tarea.prioridadId)
         tareaDao.insert(nuevaTarea)
     }
-    suspend fun insertarPrioridad(prioridad: PrioridadEntity){
-        prioridadDao.insert(prioridad)
+    suspend fun insertarPrioridad(prioridad: PrioridadModel){
+        val prioridadEntity = PrioridadEntity(prioridad.id,prioridad.nombre)
+        prioridadDao.insert(prioridadEntity)
     }
     suspend fun eliminarPrioridades(){
         prioridadDao.borrarTabla()

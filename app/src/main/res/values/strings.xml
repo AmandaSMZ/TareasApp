@@ -17,4 +17,5 @@
     <string name="txt_prioridad">Prioridad</string>
     <string name="boton_guardar">Guardar</string>
     <string name="siguiente_prioridad">Siguiente tarea </string>
+    <string name="desc_btn_actualizar">Cargar nueva nota aleatoria</string>
 </resources>

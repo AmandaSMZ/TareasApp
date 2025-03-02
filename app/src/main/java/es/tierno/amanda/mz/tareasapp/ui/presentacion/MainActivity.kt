@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.view.View.OnClickListener
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -15,31 +14,27 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.CoroutinesRoom
 import dagger.hilt.android.AndroidEntryPoint
-import es.tierno.amanda.mz.tareasapp.R
-import es.tierno.amanda.mz.tareasapp.data.NotasRepository
-import es.tierno.amanda.mz.tareasapp.data.mock.TareaProvider
-import es.tierno.amanda.mz.tareasapp.data.room.entidades.PrioridadEntity
 import es.tierno.amanda.mz.tareasapp.databinding.ActivityMainBinding
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.EliminarPrioridadesUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.EliminarTareasUseCase
-import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.InsertarTareaUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.InsertarPrioridadUseCase
+import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.InsertarTareaUseCase
 import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.ObtenerListaTareasUseCase
-import es.tierno.amanda.mz.tareasapp.dominio.casodeuso.ObtenerNotaUseCase
+import es.tierno.amanda.mz.tareasapp.dominio.modelo.Prioridad
 import es.tierno.amanda.mz.tareasapp.dominio.modelo.Tarea
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity () : AppCompatActivity(), OnClickListener {
 
     companion object{
-        const val INTERNET_REQUEST_CODE = 0
+        const val WRITE_CALENDAR_REQUEST_CODE = 10
+        const val MENSAJE_PERMISO_CONCEDIDO = "Permiso concedido"
+        const val MENSAJE_CONCEDA_PERMISO_AJUSTES = "Conceda el permiso en ajustes"
     }
     private lateinit var binding: ActivityMainBinding
 
@@ -61,8 +56,12 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        //insertarPrioridades()
-        //insertarTareas()
+
+        checkCalendarPermission()
+
+        //Descomentar estas dos líneas en la primera ejecución
+        insertarPrioridades()
+        insertarTareas()
 
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -75,10 +74,10 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
         lifecycleScope.launch(Dispatchers.IO){
             eliminarPrioridadesUseCase.invoke()
             val prioridades = listOf(
-                PrioridadEntity(1, "Importante"),
-                PrioridadEntity(2, "Urgente"),
-                PrioridadEntity(3, "Prioridad Media"),
-                PrioridadEntity(4, "Sin prisa")
+                Prioridad(1, "Importante"),
+                Prioridad(2, "Urgente"),
+                Prioridad(3, "Prioridad Media"),
+                Prioridad(4, "Sin prisa")
             )
             prioridades.forEach { prioridad ->
                 insertarPrioridadUseCase(prioridad)
@@ -126,29 +125,25 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
         }
     }
 
-    //Confimar si hay premisos
-    private fun checkInternetPermission() {
+    private fun checkCalendarPermission() {
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.INTERNET)
+                Manifest.permission.WRITE_CALENDAR)
             != PackageManager.PERMISSION_GRANTED) {
-            requestInternetPermission()
+            requestCalendarPermission()
         } else {
-            Toast.makeText(this,"Acceso a la funcionalidad", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,MENSAJE_PERMISO_CONCEDIDO, Toast.LENGTH_SHORT).show()
         }
     }
-    private fun requestInternetPermission() {
+    private fun requestCalendarPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.INTERNET)) {
-            //El usuario ya ha rechazado el permiso anteriormente, debemos indicarle que vaya a ajustes.
-            Toast.makeText(this,"Conceda permisos en ajustes", Toast.LENGTH_SHORT).show()
+                Manifest.permission.WRITE_CALENDAR)) {
+            Toast.makeText(this, MENSAJE_CONCEDA_PERMISO_AJUSTES, Toast.LENGTH_SHORT).show()
         } else {
-            //El usuario nunca ha aceptado ni rechazado, así que le solicitamos que acepte el permiso.
             ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.INTERNET),
-                Companion.INTERNET_REQUEST_CODE)
+                arrayOf(Manifest.permission.WRITE_CALENDAR),
+                Companion.WRITE_CALENDAR_REQUEST_CODE)
         }
     }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -156,23 +151,20 @@ class MainActivity () : AppCompatActivity(), OnClickListener {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            INTERNET_REQUEST_CODE -> {
+            WRITE_CALENDAR_REQUEST_CODE -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    //El usuario ha aceptado el permiso, ya no hay que volver a solicitarlo, podemos lanzar la funcionalidad desde aquí.
                     Toast.makeText(
                         this,
-                        "Acceso a la funcionalidad una vez aceptado el permiso",
+                        MENSAJE_PERMISO_CONCEDIDO,
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
                     //El usuario ha rechazado el permiso
-                    Toast.makeText(this, "Conceda permisos en ajustes", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, MENSAJE_CONCEDA_PERMISO_AJUSTES, Toast.LENGTH_SHORT).show()
                 }
                 return
             }
-
             else -> {
-                // Para aquellos permisos no controlados
             }
         }
     }

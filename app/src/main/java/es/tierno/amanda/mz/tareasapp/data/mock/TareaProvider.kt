@@ -14,20 +14,7 @@ class TareaProvider @Inject constructor () {
         )
     }
 
-    /*
 
-
-    suspend fun leer(): Tarea {
-        val persona = tareas[pos]
-        if (pos < tareas.size){
-            pos += 1
-        }else{
-            pos = 0
-        }
-
-        return Tarea(persona.title, persona.description)
-    }
-     */
     suspend fun leer(): MutableList<Tarea> {
         return tareas
     }

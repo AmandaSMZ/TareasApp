@@ -4,17 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:layout_width="364dp"
-    android:layout_height="147dp"
-    android:background="@color/material_dynamic_neutral60"
-    android:backgroundTint="@color/material_dynamic_primary90"
-    android:backgroundTintMode="add"
+    android:layout_height="wrap_content"
     tools:context=".ui.presentacion.NotasFragment">
 
     <TextView
         android:id="@+id/txt_nota"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="12dp"
         android:text="@string/hello_blank_fragment"
         android:textAlignment="center"
         android:textSize="20sp"
@@ -28,8 +25,8 @@
         android:id="@+id/txt_autor"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:text="autor"
+        android:layout_marginBottom="64dp"
+        android:text=""
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,12 +37,17 @@
         android:id="@+id/btn_actualizar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="152dp"
+        android:layout_marginBottom="4dp"
+        android:background="@color/white"
         android:clickable="true"
+        android:contentDescription="@string/desc_btn_actualizar"
+        android:focusable="true"
         android:src="@android:drawable/stat_notify_sync_noanim"
-        app:backgroundTint="@color/design_default_color_secondary_variant"
+        app:backgroundTint="@color/material_dynamic_neutral_variant80"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_autor" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
